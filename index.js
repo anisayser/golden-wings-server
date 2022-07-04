@@ -90,54 +90,61 @@ const run = async () => {
 
         //GET ALL ENENTS
         app.get('/events', async (req, res) => {
-            const cursor = eventCollection.find({});
+            const cursor = eventCollection.find({}, { sort: { _id: -1 } });
             const events = await cursor.toArray();
             res.json(events)
         })
 
         //GET THE EVENT
-        app.get('/event/:id', async (req, res)=>{
+        app.get('/event/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const event = await eventCollection.findOne(query);
             res.json(event)
         })
 
-        //SUBMIT BOOKING POST API
-        app.post('/mybooking', async (req, res)=>{
+        //ADD EVENT POST API
+        app.post('/addevent', async (req, res) => {
+            const eventData = req.body;
+            const event = await eventCollection.insertOne(eventData);
+            res.json(event);
+        })
+
+        //ADD BOOKING POST API
+        app.post('/mybooking', async (req, res) => {
             const bookingData = req.body;
             const booking = await bookingCollection.insertOne(bookingData);
             res.json(booking);
         })
 
         //GETTING ALL BOOKINGS
-        app.get('/bookings', async (req, res)=>{
+        app.get('/bookings', async (req, res) => {
             const cursor = bookingCollection.find({});
             const bookings = await cursor.toArray();
             res.json(bookings);
         })
 
         //GETTING MY BOOKED EVENTS BY EMAIL
-        app.get('/myevents/:email', async (req, res)=>{
+        app.get('/myevents/:email', async (req, res) => {
             const email = req.params.email;
-            const query = {email: email};
+            const query = { email: email };
             const cursor = bookingCollection.find(query);
             const myEvents = await cursor.toArray();
             res.json(myEvents)
         })
 
         //DELETE MY BOOKINGS as EVENTS
-        app.delete('/myevent/:id', async (req, res)=>{
+        app.delete('/myevent/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const delBooking = await bookingCollection.deleteOne(query);
             res.json(delBooking);
         })
 
         //DELETE EVENTS
-        app.delete('/events/:id', async (req, res)=>{
+        app.delete('/events/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const delEvents = await eventCollection.deleteOne(query);
             res.json(delEvents);
         })
