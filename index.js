@@ -127,11 +127,33 @@ const run = async () => {
         //GETTING MY BOOKED EVENTS BY EMAIL
         app.get('/myevents/:email', async (req, res) => {
             const email = req.params.email;
-            const query = { email: email };
+            const query = { email: email, status: 'approved' };
             const cursor = bookingCollection.find(query);
             const myEvents = await cursor.toArray();
             res.json(myEvents)
         })
+
+
+
+        //UPDATING BOOKING STATUS
+        app.put('/bookingstatus/:id', async (req, res) => {
+            const id = req.params.id;
+            const bookStatus = req.body;
+            const query = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    status: bookStatus.status,
+                }
+            }
+            // console.log('Updated Stauts', query, updateDoc, options);
+            const result = await bookingCollection.updateOne(query, updateDoc, options);
+            res.json(result)
+        })
+
+
+
+
 
         //DELETE MY BOOKINGS as EVENTS
         app.delete('/myevent/:id', async (req, res) => {
